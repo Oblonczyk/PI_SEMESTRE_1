@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Monitoramento - Unifeob</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="web-login" class="login-overlay active">
+        <div class="login-box-admin">
+            <div class="logo-unifeob-admin">
+                <span>unifeob</span><span class="dot-blue">.</span>
+            </div>
+            <div class="input-field-admin">
+                <label>ID Administrador</label>
+                <input type="text" placeholder="Ex: MAT-10293" id="admin-id" value="MAT-10293">
+            </div>
+            <div class="input-field-admin">
+                <label>Senha</label>
+                <div class="password-wrapper">
+                    <input type="password" placeholder="••••" id="admin-pass" value="1234">
+                    <span class="toggle-eye">👁️</span>
+                </div>
+            </div>
+            <button class="btn-orange-admin" type="button" onclick="efetuarLogin()">Acessar Sistema</button>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                Painel Admin<br><small>IOT Unifeob</small>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" id="menu-visao-geral" onclick="switchTab('visao-geral')">🏠 Visão Geral</a>
+                <a href="#" class="menu-item" id="menu-analytics" onclick="switchTab('historico-analytics')">📊 Gráficos & Logs</a>
+                <a href="#" class="menu-item" id="menu-cadastro" onclick="switchTab('cadastro-dados')">📋 Cadastro e Dados</a>
+            </nav>
+            <div class="sidebar-footer">
+                <p>Status: <strong style="color: #2ecc71;">Online</strong></p>
+                <button class="btn-logout" onclick="efetuarLogout()">Sair do Sistema</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            <div id="global-emergency-banner" class="emergency-banner">
+                <div class="banner-text">
+                    <strong>🚨 ALERTA CRÍTICO:</strong> Risco de incêndio detectado no <span>Lab. de Informática 3</span>! Sensor MQ-2 atingiu nível crítico.
+                </div>
+                <div class="banner-actions">
+                    <button class="btn-banner-confirm" onclick="triggerFeedback('evacuacao')">Confirmar Evacuação</button>
+                    <button class="btn-banner-false" onclick="triggerFeedback('falso')">Alarme Falso</button>
+                </div>
+            </div>
+
+            <header class="web-header">
+                <div>
+                    <h1 id="page-main-title">Monitoramento</h1>
+                    <p id="page-main-subtitle">Status em tempo real da camada de hardware</p>
+                </div>
+                </header>
+
+            <section id="tab-visao-geral" class="tab-content active">
+                <div class="cards-grid">
+                    <div class="web-card status-safe" id="card-lab3" onclick="focusLab('Lab. de Informática 3')">
+                        <div class="card-header">
+                            <h3>Lab. de Informática 3</h3>
+                            <span class="badge badge-safe" id="badge-lab3">Seguro</span>
+                        </div>
+                        <p class="card-metric">Fumaça: <span id="txt-fumaca-lab3">Aguardando dados...</span></p>
+                        <p class="card-metric">Temperatura: <span id="txt-temp-lab3">--</span></p>
+                        <span class="card-footer-action">Ver gráficos detalhados ➔</span>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-historico-analytics" class="tab-content">
+                <div class="analytics-layout">
+                    <div class="chart-section">
+                        <h2 id="chart-focused-title">Análise de Dados: Lab. de Informática 3</h2>
+                        <div class="web-chart-wrapper">
+                            <canvas id="webMq2Chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="historico-nuvem-box">
+                        <h3>Histórico de Alertas</h3>
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>DATA / HORA</th>
+                                    <th>LOCAL</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-logs-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-cadastro-dados" class="tab-content">
+                <div class="cadastro-dados-container">
+                    <div class="form-cadastro-box">
+                        <h3>Cadastrar Funcionário</h3>
+                        <form id="form-cadastro" onsubmit="adicionarFuncionario(event)">
+                            <div class="form-group-admin">
+                                <label>NOME COMPLETO</label>
+                                <input type="text" id="cad-nome" placeholder="Nome do zelador ou manutenção" required>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>ID DE REGISTRO</label>
+                                <input type="text" id="cad-id" placeholder="Gerar ID interno" required>
+                            </div>
+                            <div class="form-group-admin">
+                                <label>LABORATÓRIO / SETOR RESPONSÁVEL</label>
+                                <input type="text" id="cad-setor" placeholder="Laboratório de Informática 1" value="Laboratório de Informática 1" required>
+                            </div>
+                            <button type="submit" class="btn-submit-blue">Salvar Cadastro</button>
+                        </form>
+                    </div>
+
+                    <div class="historico-nuvem-box">
+                        <h3>Histórico Recente de Leituras (Nuvem)</h3>
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                               <thead>
+                                   <tr>
+                                       <th>DATA / HORA</th>
+                                       <th>LOCAL</th>
+                                       <th>SENSOR</th>
+                                       <th>STATUS</th>
+                                   </tr>
+                               </thead>
+                               <tbody id="table-logs-body">
+                                   <tr>
+                                       <td>23/04/2026 - 19:43</td>
+                                       <td>Lab. de Informática 3</td>
+                                       <td>MQ-2 (Fumaça)</td>
+                                       <td><span class="status-pill pill-danger">Alarme Disparado</span></td>
+                                   </tr>
+                                   <tr>
+                                       <td>23/04/2026 - 19:40</td>
+                                       <td>Lab. de Informática 3</td>
+                                       <td>DS18B20 (Temp)</td>
+                                       <td><span class="status-pill pill-success">Leitura Normal</span></td>
+                                   </tr>
+                                   <tr>
+                                       <td>23/04/2026 - 19:10</td>
+                                       <td>Lab. de Informática 1</td>
+                                       <td>MQ-2 (Fumaça)</td>
+                                       <td><span class="status-pill pill-success">Leitura Normal</span></td>
+                                   </tr>
+                                   <tr>
+                                       <td>23/04/2026 - 18:30</td>
+                                       <td>Lab. de Informática 2</td>
+                                       <td>MQ-2 (Fumaça)</td>
+                                       <td><span class="status-pill pill-success">Leitura Normal</span></td>
+                                   </tr>
+                               </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="feedback-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div id="modal-icon" style="font-size: 48px; margin-bottom: 16px;">📢</div>
+            <h2 id="modal-title">Status</h2>
+            <p id="modal-text">Descrição</p>
+            <button class="btn-orange-admin" style="width: auto; padding: 10px 30px;" onclick="closeFeedbackModal()">Ok</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
